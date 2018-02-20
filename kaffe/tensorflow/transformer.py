@@ -121,7 +121,7 @@ class TensorFlowMapper(NodeMapper):
         #TODO: Axis
         assert node.parameters.axis == 1
         #TODO: Unbiased
-        assert node.parameters.bias_term == True
+        #assert node.parameters.bias_term == True
         return MaybeActivated(node)('fc', node.parameters.num_output)
 
     def map_softmax(self, node):
@@ -146,7 +146,10 @@ class TensorFlowMapper(NodeMapper):
         return TensorFlowNode('dropout', node.parameters.dropout_ratio)
 
     def map_batch_norm(self, node):
-        scale_offset = len(node.data) == 4
+        if node.data :
+            scale_offset = len(node.data) == 4
+        else :
+            scale_offset = True  
         kwargs = {} if scale_offset else {'scale_offset': False}
         return MaybeActivated(node, default=False)('batch_normalization', **kwargs)
 
